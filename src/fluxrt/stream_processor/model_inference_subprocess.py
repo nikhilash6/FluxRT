@@ -61,7 +61,7 @@ class ModelInferenceSubprocess:
 
         self.interpolation_model = IFNet()
         self.interpolation_model.load_state_dict(
-            convert(torch.load("interpolation_model/flownet.pkl"))
+            convert(torch.load("interpolation_model/flownet.pkl", weights_only=True))
         )
         self.interpolation_model.to(self.device, torch.float16)
         self.interpolation_model.eval()
@@ -71,19 +71,19 @@ class ModelInferenceSubprocess:
 
         models_path = self.config["models_path"]
         self.scheduler = FlowMatchEulerDiscreteScheduler.from_pretrained(
-            f"{models_path}/scheduler", device=device
+            f"{models_path}/scheduler", local_files_only=True, device=device
         )
         self.transformer = Flux2Transformer2DModel.from_pretrained(
-            f"{models_path}/transformer", device=device
+            f"{models_path}/transformer", local_files_only=True, device=device
         ).to(dtype)
         self.vae = AutoencoderKLFlux2.from_pretrained(
-            f"{models_path}/vae", device=device
+            f"{models_path}/vae", local_files_only=True, device=device
         ).to(dtype)
         self.text_encoder = Qwen3ForCausalLM.from_pretrained(
-            f"{models_path}/text_encoder"
+            f"{models_path}/text_encoder", local_files_only=True
         ).to(device, dtype)
         self.tokenizer = Qwen2TokenizerFast.from_pretrained(
-            f"{models_path}/tokenizer", device=device
+            f"{models_path}/tokenizer", local_files_only=True, device=device
         )
 
         if self.config["compile_models"]:
@@ -93,7 +93,6 @@ class ModelInferenceSubprocess:
             self.vae = torch.compile(
                 self.vae,
             )
-
             self.interpolation_model = torch.compile(
                 self.interpolation_model,
             )

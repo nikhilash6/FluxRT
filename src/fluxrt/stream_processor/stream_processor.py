@@ -84,11 +84,6 @@ class StreamProcessor:
         self.model_inference_subprocess.set_param(name=name, value=value)
 
     def set_reference_image(self, image) -> None:
-        """
-        Update the reference image on the fly.
-        image: numpy uint8 RGB array
-        Raises ValueError if use_reference_image is not enabled in config.
-        """
         if not self.config.get("use_reference_image", False):
             raise ValueError(
                 "set_reference_image called but use_reference_image is not enabled in the stream processor config"
