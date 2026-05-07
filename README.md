@@ -105,6 +105,7 @@ FluxRT/
 Interactive web UI with:
 
 * live prompt editing
+* live reference image swapping
 * webcam input
 * local video processing
 
