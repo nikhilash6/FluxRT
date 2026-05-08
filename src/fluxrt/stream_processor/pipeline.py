@@ -239,7 +239,7 @@ class Flux2KleinPipeline(DiffusionPipeline, Flux2LoraLoaderMixin):
 
         self.vae_scale_factor = (
             2 ** (len(self.vae.config.block_out_channels) - 1)
-            if getattr(self, "vae", None)
+            if getattr(self, "vae", None) is not None
             else 8
         )
         # Flux latents are turned into 2x2 patches and packed. This means the latent width and height has to be divisible

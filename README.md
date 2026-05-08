@@ -4,12 +4,28 @@ Real-time **FLUX.2** image editing pipeline optimized for consumer GPUs.
 
 FluxRT enables low-latency live image transformation from **webcam**, **video files**, or other live inputs with **interactive prompt updates** and full **reference image conditioning** support.
 
+Unlike offline image-to-image or video-to-video workflows, FluxRT supports:
+- continuous streaming inference,
+- live prompt changes,
+- interactive reference-image conditioning,
+- low-latency frame scheduling,
+- spatially-aware KV reuse.
+
+And unlike [Stream Diffusion](https://github.com/cumulo-autumn/streamdiffusion) it uses **Instruct image editing model** [FLUX.2-Klein](https://bfl.ai/models/flux-2-klein) that opens very precise control and refernce image conditioning.
+
+The system is intended for:
+- AI VTubing
+- live stylization
+- virtual try-on
+- interactive art tools
+- creative coding
+
 On a single **NVIDIA RTX 5090**, FluxRT achieves:
 
 | Metric                 | Value        |
 |------------------------|--------------|
 | **Resolution**         | 512 × 512    |
-| **Frame Rate**         | 25–50 FPS    |
+| **Frame Rate**         | 20–40 FPS    |
 | **End-to-End Latency** | ~0.2 seconds |
 
 ![Main Demo](https://raw.githubusercontent.com/tensorforger/tensorforger/main/assets/main_demo.gif)
@@ -95,8 +111,8 @@ git clone https://huggingface.co/black-forest-labs/FLUX.2-klein-4B
 
 ```text
 FluxRT/
-├── interpolation_model/
-│   └── flownet.pkl
+├── RIFE-safetensors/
+│   └── flownet.safetensors
 └── FLUX.2-klein-4B/
     ├── model_index.json
     ├── scheduler/
@@ -157,13 +173,26 @@ This script also supports CLI
 python scripts/process_local_video.py --input input.mp4 --output out.mp4 --prompt "Turn this into oil on canvas art"
 ```
 
+### Run performance benchmark
+
+This will show throughput (FPS) with various dynamic area values and end-to-end latency.
+The generated benchmark report will include the current configuration and hardware parameters.
+
+```bash
+python scripts/run_benchmark.py
+```
+
+You can check report generated on my machine in `benchmark_report.txt`
+
+I would appreciate it if you could share your report in the [issues](https://github.com/tensorforger/FluxRT/issues), especially if it was generated on different hardware setup.
+
 # How It Works
 
 FluxRT combines multiple system-level and model-level optimizations to enable real-time inference.
 
-### Spatial Cache
+### Spatial KV Cache
 
-Spatial Cache is a custom KV-cache variant tailored for rectified flow models.
+Spatial KV Cache is a custom KV-cache variant tailored for rectified flow models.
 
 FLUX.2 models exhibit highly similar diffusion trajectories across adjacent frames. This temporal coherence allows reuse of intermediate computations between frames. Instead of recomputing all tokens, FluxRT selectively caches and reuses tokens from previous frames.
 
@@ -201,8 +230,8 @@ Below is a comparison against the baseline (resolution: 576 × 320, 2 inference 
 | ------------ | ------------------------------------------------------- | ----------------------------------------------------- |
 | Demo         | ![Spatial Cache OFF](https://raw.githubusercontent.com/tensorforger/tensorforger/main/assets/spatial_cache_off.gif)    | ![Spatial Cache ON](https://raw.githubusercontent.com/tensorforger/tensorforger/main/assets/spatial_cache_on.gif)    |
 | 0–10%        | 20 FPS                                                  | 50 FPS                                                |
-| 50%          | 20 FPS                                                  | 35 FPS                                                |
-| 90–100%      | 20 FPS                                                  | 25 FPS                                                |
+| 50%          | 20 FPS                                                  | 30 FPS                                                |
+| 90–100%      | 20 FPS                                                  | 20 FPS                                                |
 
 > The spatial update mask is shown in the corner:
 > white pixels = recomputed, black pixels = reused.

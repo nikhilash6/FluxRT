@@ -1,5 +1,5 @@
 {
-    "default_prompt" : "Turn this into oil on canvas art in style of Wassily Kandinsky.",
+    "default_prompt" : "Turn this into art.",
     "default_steps" : 2,
     "default_seed" : 52,
     "models_path" : "FLUX.2-klein-4B",

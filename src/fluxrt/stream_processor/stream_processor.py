@@ -109,3 +109,7 @@ class StreamProcessor:
 
     def get_output_shared_tensor_name(self) -> str:
         return self.output_shared_tensor.name
+
+    def get_last_processing_time(self) -> float:
+        with self.last_processing_time.get_lock():
+            return self.last_processing_time.value

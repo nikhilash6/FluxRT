@@ -7,7 +7,7 @@
         "height" : 320,
         "width" : 576
     },
-    "compile_models": false,
+    "compile_models": true,
     "enable_spatial_cache": true,
     "target_fps":null,
     "interpolation_exp": 2,
