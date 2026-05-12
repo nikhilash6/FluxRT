@@ -161,6 +161,8 @@ GUI supports:
 * live prompt editing
 * live reference image swapping
 
+> GUI uses pyvirtualcam internally which requires OBS or v4l2loopback to be installed. See [installation guide](https://pypi.org/project/pyvirtualcam/) if you have some issues.
+
 ```bash
 python scripts/run_gui.py
 ```
